@@ -1,11 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { RegisterUserDto } from '../users/dto/registerUser.dto';
+import { LoginDto } from './dto/login.dto';
+import { JwtService } from '@nestjs/jwt';
+import { UserInterface } from './user.interface';
 
 @Injectable()
 export class AuthService {
 
-	constructor(private usersService: UsersService){}
+	constructor(
+		private usersService: UsersService,
+		private jwtService: JwtService
+	){}
 
 	async validateUser(username: string, password: string): Promise<any>{
 		const user = await this.usersService.findOne(username)
@@ -16,7 +22,7 @@ export class AuthService {
 			return result
 		}
 
-		return null
+		throw new BadRequestException('username/password salah')
 	}
 
 	async register(registerUserDto:RegisterUserDto){
@@ -24,4 +30,19 @@ export class AuthService {
 
 		return user
 	}
+
+	async login(user: UserInterface){
+		const payload = {
+			username: user.username,
+			_id: user.id
+		}
+
+		return {
+			access_token : this.jwtService.sign(payload)
+		}
+	}
+
+	async logout(user: UserInterface){}
+
+	async refresh(user: UserInterface){}
 }
