@@ -3,6 +3,7 @@ import { Users } from './user.entity';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import { UpdateTokenDto } from '../auth/dto/update-token.dto';
 
 @Injectable()
 export class UsersService {
@@ -77,4 +78,11 @@ export class UsersService {
 		}
 	}
 
+	async storeToken(updateTokenDto:UpdateTokenDto): Promise<any>{
+		const user = await this.userRepository.findOne({
+			where: {
+				id: updateTokenDto.id
+			}
+		})
+	}
 }

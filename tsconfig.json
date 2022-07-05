@@ -18,9 +18,9 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-	"@utils/*" : ["src/utils/*"],
+	"@helper/*" : ["src/helper/*"],
 	"@common/*": ["src/common/*"],
-	"@/*": ["./*"]
+	"@config/*": ["src/config/*"],
     }
   }
 }

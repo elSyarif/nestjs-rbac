@@ -22,7 +22,7 @@ export class AuthService {
 			return result
 		}
 
-		throw new BadRequestException('username/password salah')
+		throw new BadRequestException('username/password invalid')
 	}
 
 	async register(registerUserDto:RegisterUserDto){
@@ -38,7 +38,11 @@ export class AuthService {
 		}
 
 		return {
-			access_token : this.jwtService.sign(payload)
+			access_token : this.jwtService.sign(payload),
+			refresh_token: this.jwtService.sign(payload, {
+				secret: process.env.JWT_SECRET_REFRESH_TOKEN,
+				expiresIn: process.env.JWT_EXPIRE_TIME_REFRESH_TOKEN
+			})
 		}
 	}
 
