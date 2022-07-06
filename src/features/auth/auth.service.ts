@@ -4,6 +4,8 @@ import { RegisterUserDto } from '../users/dto/registerUser.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserInterface } from './user.interface';
+import { UpdateTokenDto } from './dto/update-token.dto';
+import { CreateTokenDto } from './dto/create-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -46,7 +48,27 @@ export class AuthService {
 		}
 	}
 
-	async logout(user: UserInterface){}
+	// TODO: Logout
+	// remove refreshtoken from database
+	async logout(user: UserInterface){
+		const deleteToken = await this.usersService.deleteToken(user.id)
 
+		return deleteToken
+	}
+
+	async findToken(userId: string){
+		return await this.usersService.findUserToken(userId)
+	}
+	// TODO: save refreshtoken to database
+	async saveToken(user: CreateTokenDto){
+		return await this.usersService.storeToken(user)
+	}
+
+	async updateToken(updateToken: UpdateTokenDto){
+		return await this.usersService.updateToken(updateToken)
+	}
+
+	// TODO: insert refesh token to databse
+	// create new cookies refreshtoken and accestoken to headers auth
 	async refresh(user: UserInterface){}
 }

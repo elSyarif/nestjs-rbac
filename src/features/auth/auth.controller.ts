@@ -7,6 +7,7 @@ import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from '../../common/guard/jwt-auth.guard';
 
 import { Encrypt, Decrypt } from '@helper/crypto.helper';
+import { LoginUserInterface, UserInterface } from './user.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -19,11 +20,27 @@ export class AuthController {
 	async login(@Body() loginDto: LoginDto, @Req() request: Request, @Res() response: Response){
 		const {username, password} = loginDto
 
-		const user = await this.authService.validateUser(username, password)
+		const user: LoginUserInterface = await this.authService.validateUser(username, password)
 
 		const jwt = await this.authService.login(user)
 		user.access_token = Encrypt(jwt.access_token)
-		// user.refresh_token = Encrypt(jwt.refresh_token)
+		
+		const payload = {
+			id: user.id, 
+			accessToken: Encrypt(jwt.access_token),
+			refreshToken: Encrypt(jwt.refresh_token),
+			username: user.username
+		}
+		// TODO: IF user has login in another page 
+		// delete first / update token
+		const userToken = await this.authService.findToken(user.id)
+		if(userToken){
+			// TODO: Update token to database
+			await this.authService.updateToken(payload)
+		}else{
+			// TODO: insert token to database
+			await this.authService.saveToken(payload)
+		}
 
 		// setup cookies token
 		response.cookie('x-refresh-token', Encrypt(jwt.refresh_token), {
@@ -55,7 +72,15 @@ export class AuthController {
 	@UseGuards(JwtAuthGuard)
 	@HttpCode(HttpStatus.OK)
 	async logout(@Req() request: Request, @Res() response: Response){
-		response.json('logout')
+		const user = request.user
+		await this.authService.logout(user)
+
+		response.clearCookie('x-refresh-token')
+		
+		response.json({
+			statusCode: HttpStatus.OK,
+			message: "logout berhasil"
+		})
 	}
 
 	@Public()
