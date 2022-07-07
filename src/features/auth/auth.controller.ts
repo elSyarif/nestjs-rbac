@@ -24,20 +24,22 @@ export class AuthController {
 
 		const jwt = await this.authService.login(user)
 		user.access_token = Encrypt(jwt.access_token)
-		
+
 		const payload = {
-			id: user.id, 
+			id: user.id,
 			accessToken: Encrypt(jwt.access_token),
 			refreshToken: Encrypt(jwt.refresh_token),
 			username: user.username
 		}
-		// TODO: IF user has login in another page 
+		// TODO: IF user has login in another page
 		// delete first / update token
 		const userToken = await this.authService.findToken(user.id)
 		if(userToken){
+			payload.refreshToken = request.cookies['x-refresh-token']
 			// TODO: Update token to database
 			await this.authService.updateToken(payload)
 		}else{
+			console.log(userToken)
 			// TODO: insert token to database
 			await this.authService.saveToken(payload)
 		}
@@ -76,7 +78,7 @@ export class AuthController {
 		await this.authService.logout(user)
 
 		response.clearCookie('x-refresh-token')
-		
+
 		response.json({
 			statusCode: HttpStatus.OK,
 			message: "logout berhasil"
@@ -95,6 +97,6 @@ export class AuthController {
 
 		// cek refreshtoken to database
 
-		// create new access token 
+		// create new access token
 	}
 }

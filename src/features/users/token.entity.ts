@@ -8,10 +8,14 @@ export class UserToken{
     @Column()
     user_id: string
 
-    @Column()
+    @Column({
+	length: 500
+    })
     access_token: string
-    
-    @Column()
+
+    @Column({
+	length:500
+    })
     refresh_token: string
 
     @Column()

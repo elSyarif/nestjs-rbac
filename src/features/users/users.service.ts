@@ -3,9 +3,6 @@ import { Users } from './user.entity';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { UpdateTokenDto } from '../auth/dto/update-token.dto';
-import { UserToken } from './token.entity';
-import { CreateTokenDto } from '../auth/dto/create-token.dto';
 
 @Injectable()
 export class UsersService {
@@ -82,8 +79,8 @@ export class UsersService {
 		}
 	}
 
-	// TODO: update user 
+	// TODO: update user
 	async updateUser(){}
 
-	
+
 }

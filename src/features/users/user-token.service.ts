@@ -29,13 +29,13 @@ export class UserTokenService{
 	// TODO: insert new token
 	async storeToken(createTokenDto:CreateTokenDto): Promise<any>{
 		const ds = this.dataSource.createQueryRunner()
-		
+
 		await ds.connect()
 		await ds.startTransaction()
-		
+
 		const users = await ds.manager.getRepository(Users)
 		const userTokenRepository = await ds.manager.getRepository(UserToken)
-		
+
 
 		const user = await users.findOne({
 			where: {
@@ -48,13 +48,13 @@ export class UserTokenService{
 			userToken.user_id = user.id
 			userToken.access_token = createTokenDto.accessToken
 			userToken.refresh_token = createTokenDto.refreshToken
-			userToken.id = "0.0"
+			userToken.ip = "0.0"
 
 			await userTokenRepository.save(userToken)
 			// commit to table
 			await ds.commitTransaction()
 		} catch (error) {
-			// rollback 
+			// rollback
 			await ds.rollbackTransaction()
 		} finally{
 			// release datasource connection
@@ -62,32 +62,34 @@ export class UserTokenService{
 		}
 	}
 
-	// TODO: update user login refreshtoken 
+	// TODO: update user login refreshtoken
 	async updateToken(updateToken: UpdateTokenDto): Promise<any>{
 		const ds = this.dataSource.createQueryRunner()
-		
+
+		console.log('first')
 		ds.connect()
 		ds.startTransaction()
-		
+
 		const userToken = await ds.manager.getRepository(UserToken)
-		
+
 		try {
 			const updateUserToken = await userToken.findOne({
 				where: {
 					refresh_token: updateToken.refreshToken
 				}
 			});
-	
+
 			updateUserToken.refresh_token = updateToken.refreshToken
 			updateUserToken.access_token = updateToken.accessToken
-	
+
 			await userToken.save(updateUserToken)
-			
+
 			ds.commitTransaction()
 
 			return updateUserToken
 		} catch (error) {
 			ds.rollbackTransaction()
+			ds.release()
 		} finally{
 			ds.release()
 		}
@@ -108,14 +110,14 @@ export class UserTokenService{
 		return await this.tokenRepository.remove(userToken)
 	}
 
-	// TODO: find refresh token 
+	// TODO: find refresh token
 	async findRefreshToken(refresh_token: string): Promise<any>{
 		const refreshToken = this.tokenRepository.findOneOrFail({
 			where: {
 				refresh_token: refresh_token
 			}
 		})
-		
+
 		return refreshToken
 	}
 }
