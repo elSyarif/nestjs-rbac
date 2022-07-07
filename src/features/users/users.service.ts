@@ -13,7 +13,6 @@ export class UsersService {
 	constructor(
 		@InjectRepository(Users)
 		private userRepository: Repository<Users>,
-		private tokenRepository: Repository<UserToken>,
 		private dataSource: DataSource
 	){}
 
@@ -86,96 +85,5 @@ export class UsersService {
 	// TODO: update user 
 	async updateUser(){}
 
-	async findUserToken(userId: string){
-		const token = await this.tokenRepository.findOneBy({
-			user_id: userId
-		})
-
-		if(!token){
-			return false
-		}
-
-		return true
-	}
-	// TODO: insert new token
-	async storeToken(createTokenDto:CreateTokenDto): Promise<any>{
-		const ds = this.dataSource.createQueryRunner()
-		
-		await ds.connect()
-		await ds.startTransaction()
-		
-		const users = await ds.manager.getRepository(Users)
-		const userTokenRepository = await ds.manager.getRepository(UserToken)
-		
-
-		const user = await users.findOne({
-			where: {
-				id: createTokenDto.id
-			}
-		})
-
-		try {
-			const userToken = new UserToken()
-			userToken.user_id = user.id
-			userToken.access_token = createTokenDto.accessToken
-			userToken.refresh_token = createTokenDto.refreshToken
-			userToken.id = "0.0"
-
-			await userTokenRepository.save(userToken)
-			// commit to table
-			await ds.commitTransaction()
-		} catch (error) {
-			// rollback 
-			await ds.rollbackTransaction()
-		} finally{
-			// release datasource connection
-			await ds.release()
-		}
-	}
-
-	// TODO: update user login refreshtoken 
-	async updateToken(updateToken: UpdateTokenDto): Promise<any>{
-		const ds = this.dataSource.createQueryRunner()
-		
-		ds.connect()
-		ds.startTransaction()
-		
-		const userToken = await ds.manager.getRepository(UserToken)
-		
-		try {
-			const updateUserToken = await userToken.findOne({
-				where: {
-					refresh_token: updateToken.refreshToken
-				}
-			});
 	
-			updateUserToken.refresh_token = updateToken.refreshToken
-			updateUserToken.access_token = updateToken.accessToken
-	
-			await userToken.save(updateUserToken)
-			
-			ds.commitTransaction()
-
-			return updateUserToken
-		} catch (error) {
-			ds.rollbackTransaction()
-		} finally{
-			ds.release()
-		}
-	}
-
-	// TODO: delete user refresh token
-	async deleteToken(refreshToken: string): Promise<any>{
-		const userToken = await this.tokenRepository.findOne({
-			where: {
-				refresh_token: refreshToken
-			}
-		})
-
-		if(!userToken){
-			throw new NotFoundException()
-		}
-
-		return await this.tokenRepository.remove(userToken)
-	}
 }

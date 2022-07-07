@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from '@config/configuration';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { APP_GUARD } from '@nestjs/core';
+import { UserTokenService } from '../users/user-token.service';
 
 @Module({
 	imports: [
@@ -28,6 +29,7 @@ import { APP_GUARD } from '@nestjs/core';
 	providers: [
 		UsersService,
 		AuthService,
+		UserTokenService,
 		LocalStrategy,
 		{
 			provide: APP_GUARD,
