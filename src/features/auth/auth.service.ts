@@ -7,6 +7,8 @@ import { UserInterface } from './user.interface';
 import { UpdateTokenDto } from './dto/update-token.dto';
 import { CreateTokenDto } from './dto/create-token.dto';
 import { UserTokenService } from '../users/user-token.service';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { Decrypt } from '@helper/crypto.helper';
 
 @Injectable()
 export class AuthService {
@@ -72,5 +74,26 @@ export class AuthService {
 
 	// TODO: insert refesh token to databse
 	// create new cookies refreshtoken and accestoken to headers auth
-	async refresh(user: UserInterface){}
+	async refreshToken(userToken: RefreshTokenDto){
+		// cek refreshtoken
+		const token = await this.userTokenService.findRefreshToken(userToken.refresh_token)
+
+		if(!token){
+			throw new BadRequestException()
+		}
+
+		const decode = this.jwtService.verify(Decrypt(token.refresh_token), {
+			secret: process.env.JWT_SECRET_REFRESH_TOKEN 
+		})
+
+		console.log(decode)
+
+		const newAccessToken = this.jwtService.sign({
+			_id: userToken.id,
+			username: userToken.username
+		})
+
+		// return access_token 
+		return newAccessToken
+	}
 }

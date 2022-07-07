@@ -25,6 +25,7 @@ export class UserTokenService{
 
 		return true
 	}
+
 	// TODO: insert new token
 	async storeToken(createTokenDto:CreateTokenDto): Promise<any>{
 		const ds = this.dataSource.createQueryRunner()
@@ -105,5 +106,16 @@ export class UserTokenService{
 		}
 
 		return await this.tokenRepository.remove(userToken)
+	}
+
+	// TODO: find refresh token 
+	async findRefreshToken(refresh_token: string): Promise<any>{
+		const refreshToken = this.tokenRepository.findOneOrFail({
+			where: {
+				refresh_token: refresh_token
+			}
+		})
+		
+		return refreshToken
 	}
 }

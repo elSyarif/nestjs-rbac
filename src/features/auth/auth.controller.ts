@@ -1,5 +1,5 @@
 import { Public } from '@common/decorators';
-import { Body, Controller, Delete, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { RegisterUserDto } from '../users/dto/registerUser.dto';
 import { AuthService } from './auth.service';
@@ -87,6 +87,14 @@ export class AuthController {
 	@Post('refresh')
 	@HttpCode(HttpStatus.OK)
 	async refreshToken(@Req() request: Request, @Res() response: Response){
+		const refreshToken = Decrypt(response.clearCookie('x-refresh-token'))
 
+		if(!refreshToken){
+			throw new BadRequestException()
+		}
+
+		// cek refreshtoken to database
+
+		// create new access token 
 	}
 }
