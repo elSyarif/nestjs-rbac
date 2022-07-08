@@ -17,11 +17,13 @@ export class JwtAuthGuard extends AuthGuard('jwt'){
 	    const request = context.switchToHttp().getRequest()
 	    const response = context.switchToHttp().getResponse()
 
-	    let token = request.headers.authorization.split(' ')[1]
+		let token: string
+		if(request.headers.authorization && request.headers.authorization.startsWith('Bearer')){
+			token = request.headers.authorization.split(' ')[1]
+			const decrypt = Decrypt(token)
 
-	    const decrypt = Decrypt(token)
-
-	    request.headers.authorization = `Bearer ${decrypt}`
+			request.headers.authorization = `Bearer ${decrypt}`
+		}
 
 	    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
 			context.getHandler(),

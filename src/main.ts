@@ -13,6 +13,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const config = new DocumentBuilder()
+    .addBearerAuth()
     .setTitle('Restfull API ')
     .setDescription('Task backend')
     .setVersion('1.0')

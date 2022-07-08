@@ -1,14 +1,17 @@
 import { Public } from '@common/decorators';
-import { BadRequestException, Body, Controller, Delete, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { RegisterUserDto } from '../users/dto/registerUser.dto';
+import { RegisterUserDto } from './dto/registerUser.dto';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from '../../common/guard/jwt-auth.guard';
 
 import { Encrypt, Decrypt } from '@helper/crypto.helper';
-import { LoginUserInterface, UserInterface } from './user.interface';
+import { LoginUserInterface } from './user.interface';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Authentication')
+@ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
 
@@ -17,6 +20,8 @@ export class AuthController {
 	@Public()
 	@Post('/login')
 	@HttpCode(HttpStatus.OK)
+	@ApiResponse({ status: HttpStatus.OK, description: "User login has been successfully."})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request"})
 	async login(@Body() loginDto: LoginDto, @Req() request: Request, @Res() response: Response){
 		const {username, password} = loginDto
 
@@ -29,17 +34,17 @@ export class AuthController {
 			id: user.id,
 			accessToken: Encrypt(jwt.access_token),
 			refreshToken: Encrypt(jwt.refresh_token),
+			oldRefreshToken: request.cookies['x-refresh-token'] || '',
 			username: user.username
 		}
 		// TODO: IF user has login in another page
 		// delete first / update token
-		const userToken = await this.authService.findToken(user.id)
+		const userToken = await this.authService.findRefreshToken(payload.oldRefreshToken)
+
 		if(userToken){
-			payload.refreshToken = request.cookies['x-refresh-token']
 			// TODO: Update token to database
 			await this.authService.updateToken(payload)
 		}else{
-			console.log(userToken)
 			// TODO: insert token to database
 			await this.authService.saveToken(payload)
 		}
@@ -57,9 +62,11 @@ export class AuthController {
 			data: user
 		})
 	}
-
+	
 	@Post('/register')
 	@HttpCode(HttpStatus.CREATED)
+	@ApiResponse({ status: HttpStatus.CREATED, description: "The record has been successfully register."})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request"})
 	async register(@Body() registerUserDto:RegisterUserDto, @Req() request: Request, @Res() response: Response){
 		const user = 	await this.authService.register(registerUserDto)
 
@@ -70,12 +77,20 @@ export class AuthController {
 		})
 	}
 
+	
 	@Post('logout')
 	@UseGuards(JwtAuthGuard)
 	@HttpCode(HttpStatus.OK)
 	async logout(@Req() request: Request, @Res() response: Response){
-		const user = request.user
-		await this.authService.logout(user)
+		const token = request.cookies['x-refresh-token']
+		
+		if(!token){
+			throw new BadRequestException('Token invalid')
+		}
+
+		request.user = null
+
+		await this.authService.logout(token)
 
 		response.clearCookie('x-refresh-token')
 
@@ -85,17 +100,22 @@ export class AuthController {
 		})
 	}
 
-	@Public()
 	@Post('refresh')
+	@UseGuards(JwtAuthGuard)
 	@HttpCode(HttpStatus.OK)
 	async refreshToken(@Req() request: Request, @Res() response: Response){
-		const refreshToken = Decrypt(response.clearCookie('x-refresh-token'))
+		const token = request.cookies['x-refresh-token']
 
-		if(!refreshToken){
-			throw new BadRequestException()
+		if(!token){
+			throw new BadRequestException('Token invalid')
 		}
 
 		// cek refreshtoken to database
+		const refresh = await this.authService.refreshToken(token)
+
+		response.json({
+			access_token: Encrypt(refresh)
+		})
 
 		// create new access token
 	}

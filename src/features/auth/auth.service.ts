@@ -54,8 +54,8 @@ export class AuthService {
 
 	// TODO: Logout
 	// remove refreshtoken from database
-	async logout(user: UserInterface){
-		const deleteToken = await this.userTokenService.deleteToken(user.id)
+	async logout(refreshToken: string){
+		const deleteToken = await this.userTokenService.deleteToken(refreshToken)
 
 		return deleteToken
 	}
@@ -83,10 +83,13 @@ export class AuthService {
 		}
 
 		const decode = this.jwtService.verify(Decrypt(token.refresh_token), {
-			secret: process.env.JWT_SECRET_REFRESH_TOKEN 
+			secret: process.env.JWT_SECRET_REFRESH_TOKEN,
 		})
-
-		console.log(decode)
+		
+		const isExp = decode.exp * 1000 <= Date.parse(Date())
+		if(isExp){
+			throw new BadRequestException('Refresh Token expire')
+		}
 
 		const newAccessToken = this.jwtService.sign({
 			_id: userToken.id,
@@ -95,5 +98,9 @@ export class AuthService {
 
 		// return access_token 
 		return newAccessToken
+	}
+
+	async findRefreshToken(refreshToken: string){
+		return await this.userTokenService.findRefreshToken(refreshToken)
 	}
 }

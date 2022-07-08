@@ -66,7 +66,6 @@ export class UserTokenService{
 	async updateToken(updateToken: UpdateTokenDto): Promise<any>{
 		const ds = this.dataSource.createQueryRunner()
 
-		console.log('first')
 		ds.connect()
 		ds.startTransaction()
 
@@ -75,7 +74,7 @@ export class UserTokenService{
 		try {
 			const updateUserToken = await userToken.findOne({
 				where: {
-					refresh_token: updateToken.refreshToken
+					refresh_token: updateToken.oldRefreshToken
 				}
 			});
 
@@ -88,8 +87,8 @@ export class UserTokenService{
 
 			return updateUserToken
 		} catch (error) {
+			console.log(error)
 			ds.rollbackTransaction()
-			ds.release()
 		} finally{
 			ds.release()
 		}
@@ -112,10 +111,8 @@ export class UserTokenService{
 
 	// TODO: find refresh token
 	async findRefreshToken(refresh_token: string): Promise<any>{
-		const refreshToken = this.tokenRepository.findOneOrFail({
-			where: {
-				refresh_token: refresh_token
-			}
+		const refreshToken = this.tokenRepository.findOneBy({
+			refresh_token: refresh_token
 		})
 
 		return refreshToken

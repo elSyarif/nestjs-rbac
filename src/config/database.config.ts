@@ -11,5 +11,6 @@ export const DatabaseConfig: TypeOrmModuleOptions = {
 	database: 'db_pos',
 	entities: [ __dirname + '/../**/**/*.entity.{js,ts}'],
 	synchronize: true,
+	logging: false,
 }
 
