@@ -66,8 +66,8 @@ export class UserTokenService{
 	async updateToken(updateToken: UpdateTokenDto): Promise<any>{
 		const ds = this.dataSource.createQueryRunner()
 
-		ds.connect()
-		ds.startTransaction()
+		await ds.connect()
+		await ds.startTransaction()
 
 		const userToken = await ds.manager.getRepository(UserToken)
 
@@ -83,14 +83,13 @@ export class UserTokenService{
 
 			await userToken.save(updateUserToken)
 
-			ds.commitTransaction()
+			await ds.commitTransaction()
 
 			return updateUserToken
 		} catch (error) {
-			console.log(error)
-			ds.rollbackTransaction()
+			await ds.rollbackTransaction()
 		} finally{
-			ds.release()
+			await ds.release()
 		}
 	}
 
