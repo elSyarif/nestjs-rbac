@@ -3,11 +3,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 import * as dotenv from 'dotenv'
-import configuration from '@config/configuration';
+
 dotenv.config()
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+  });
 
   app.enableCors()
   app.use(cookieParser());
