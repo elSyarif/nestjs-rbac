@@ -1,5 +1,5 @@
 import { Public } from '@common/decorators';
-import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { AuthService } from './auth.service';
@@ -20,6 +20,7 @@ export class AuthController {
 	@Public()
 	@Post('/login')
 	@HttpCode(HttpStatus.OK)
+	@UsePipes(new ValidationPipe({ transform: true}))
 	@ApiResponse({ status: HttpStatus.OK, description: "User login has been successfully."})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request"})
 	async login(@Body() loginDto: LoginDto, @Req() request: Request, @Res() response: Response){
@@ -62,9 +63,10 @@ export class AuthController {
 			data: user
 		})
 	}
-	
+
 	@Post('/register')
 	@HttpCode(HttpStatus.CREATED)
+	@UsePipes(new ValidationPipe({ transform: true}))
 	@ApiResponse({ status: HttpStatus.CREATED, description: "The record has been successfully register."})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request"})
 	async register(@Body() registerUserDto:RegisterUserDto, @Req() request: Request, @Res() response: Response){
@@ -77,13 +79,13 @@ export class AuthController {
 		})
 	}
 
-	
+
 	@Post('logout')
 	@UseGuards(JwtAuthGuard)
 	@HttpCode(HttpStatus.OK)
 	async logout(@Req() request: Request, @Res() response: Response){
 		const token = request.cookies['x-refresh-token']
-		
+
 		if(!token){
 			throw new BadRequestException('Token invalid')
 		}
