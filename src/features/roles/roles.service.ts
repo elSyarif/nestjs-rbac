@@ -31,7 +31,7 @@ export class RolesService{
     }
     
     // TODO: create new role 
-    async save(roleDto: CreateRoleDto){
+    async create(roleDto: CreateRoleDto){
         const role = new Roles()
         role.name = roleDto.name
         role.description = roleDto.description
@@ -45,13 +45,13 @@ export class RolesService{
         role.name = roldDto.name
         role.description = roldDto.description
 
-        await this.roleRepository.save(role)
+        return await this.roleRepository.save(role)
     }
     
     // TODO: delete role
     async delete(roleId: number){
-        const token = await this.findOne(roleId)
+        const role = await this.findOne(roleId)
 
-        return await this.roleRepository.remove(token)
+        return await this.roleRepository.remove(role)
     }
 }

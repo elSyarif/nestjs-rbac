@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import configuration from './config/configuration';
 import { DatabaseConfig } from './config/database.config';
 import { AuthModule } from './features/auth/auth.module';
+import { PermissionsModule } from './features/permissions/permissions.module';
 import { RolesModule } from './features/roles/roles.module';
 import { UsersModule } from './features/users/users.module';
 
@@ -17,7 +18,8 @@ import { UsersModule } from './features/users/users.module';
 	TypeOrmModule.forRoot(DatabaseConfig),
 	AuthModule,
 	UsersModule,
-	RolesModule
+	RolesModule,
+	PermissionsModule
   ],
   providers: [],
   controllers: [],
