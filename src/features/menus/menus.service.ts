@@ -7,7 +7,7 @@ import { Menus } from "./menus.entity";
 
 @Injectable()
 export class MenusService{
-    
+
     constructor(
         @InjectRepository(Menus)
         private repository: Repository<Menus>
@@ -25,7 +25,7 @@ export class MenusService{
         return await this.repository.save(menu)
     }
 
-    async findAll(limit: number, skip: number){
+    async findAll(limit?: number, skip?: number){
         const menus = await this.repository.find({
             order: {
                 id: "ASC",
@@ -59,7 +59,7 @@ export class MenusService{
 
         return await this.repository.save(menu)
     }
-    
+
     async remove(id: number){
         const menu = await this.findOne(id)
 
@@ -71,7 +71,7 @@ export class MenusService{
             .select("max(menu.sort)", "max")
             .where("menu.parent_id = :id", {id: id})
             .getRawOne()
-            
+
         return menus
     }
 }

@@ -7,6 +7,7 @@ import { AuthModule } from './features/auth/auth.module';
 import { PermissionsModule } from './features/permissions/permissions.module';
 import { RolesModule } from './features/roles/roles.module';
 import { UsersModule } from './features/users/users.module';
+import { MenusModule } from './features/menus/menus.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { UsersModule } from './features/users/users.module';
 	AuthModule,
 	UsersModule,
 	RolesModule,
-	PermissionsModule
+	PermissionsModule,
+	MenusModule
   ],
   providers: [],
   controllers: [],
