@@ -4,4 +4,5 @@ export class UpdateTokenDto{
 	refreshToken?: string
 	oldRefreshToken?: string
 	user_id?: string
+	ip?: string
 }

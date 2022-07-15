@@ -8,7 +8,7 @@ dotenv.config()
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+    logger: ['error', 'warn', 'debug', 'verbose'],
   });
 
   app.enableCors()
@@ -24,6 +24,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT);
+  await app.listen(process.env.PORT, ()=> {
+	console.log(`⚡️[server]: Server is running at http://localhost:${process.env.PORT}`);
+  });
 }
 bootstrap();

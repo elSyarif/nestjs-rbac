@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Users } from './user.entity';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +6,7 @@ import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
+	private readonly logger = new Logger(UsersService.name)
 
 	constructor(
 		@InjectRepository(Users)
@@ -77,6 +78,21 @@ export class UsersService {
 		} finally{
 			await ds.release()
 		}
+	}
+
+	// TODO: Find user by user id
+	async findById(userId: string){
+		const user = await this.userRepository.findOneBy({
+			id: userId
+		})
+
+		if(!user){
+			throw new NotFoundException(`User not found`)
+		}
+		// exclude  password
+		const { password, ...result } = user
+
+		return result
 	}
 
 	// TODO: update user

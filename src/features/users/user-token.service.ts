@@ -48,7 +48,7 @@ export class UserTokenService{
 			userToken.user_id = user.id
 			userToken.access_token = createTokenDto.accessToken
 			userToken.refresh_token = createTokenDto.refreshToken
-			userToken.ip = "0.0"
+			userToken.ip = createTokenDto.ip
 
 			await userTokenRepository.save(userToken)
 			// commit to table
@@ -80,6 +80,7 @@ export class UserTokenService{
 
 			updateUserToken.refresh_token = updateToken.refreshToken
 			updateUserToken.access_token = updateToken.accessToken
+			updateUserToken.ip = updateToken.ip
 
 			await userToken.save(updateUserToken)
 

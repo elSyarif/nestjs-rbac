@@ -51,7 +51,7 @@ export class MenusController {
 		});
 	}
 
-	@Get()
+	@Get(':id')
 	@HttpCode(HttpStatus.OK)
 	async findOne(
 		@Param('id', ParseIntPipe) id: number,
@@ -67,7 +67,7 @@ export class MenusController {
 		});
 	}
 
-	@Patch()
+	@Patch(':id')
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@HttpCode(HttpStatus.OK)
 	async update(
@@ -88,7 +88,7 @@ export class MenusController {
 		});
 	}
 
-	@Delete()
+	@Delete(':id')
 	@HttpCode(HttpStatus.OK)
 	async remove(
 		@Param('id', ParseIntPipe) id: number,

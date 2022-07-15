@@ -26,6 +26,8 @@ export class AuthController {
 	async login(@Body() loginDto: LoginDto, @Req() request: Request, @Res() response: Response){
 		const {username, password} = loginDto
 
+		const ip = request.ip
+
 		const user: LoginUserInterface = await this.authService.validateUser(username, password)
 
 		const jwt = await this.authService.login(user)
@@ -36,7 +38,8 @@ export class AuthController {
 			accessToken: Encrypt(jwt.access_token),
 			refreshToken: Encrypt(jwt.refresh_token),
 			oldRefreshToken: request.cookies['x-refresh-token'] || '',
-			username: user.username
+			username: user.username,
+			ip: request.ip
 		}
 		// TODO: IF user has login in another page
 		// delete first / update token

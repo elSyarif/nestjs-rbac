@@ -3,4 +3,5 @@ export class CreateTokenDto{
     accessToken: string
     refreshToken: string
     username?: string
+    ip?: string
 }
