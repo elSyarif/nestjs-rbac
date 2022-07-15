@@ -1,11 +1,16 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
+import { Users } from './user.entity';
 
 @Entity()
 export class UserToken{
     @PrimaryGeneratedColumn('uuid')
     id: string
 
-    @Column()
+    @OneToOne(() => Users)
+    @JoinColumn({
+	name: 'user_id',
+	referencedColumnName: 'id',
+    })
     user_id: string
 
     @Column({

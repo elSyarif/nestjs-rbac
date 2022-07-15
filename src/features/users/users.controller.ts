@@ -1,9 +1,11 @@
-import { Controller, Get, Req, Res, UseGuards, HttpStatus, Logger } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards, HttpStatus, Logger, Post, Body } from '@nestjs/common';
 import { JwtAuthGuard } from '@common/guard/jwt-auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { Users } from './user.entity';
 import { UsersService } from './users.service';
+import { AsignUserPermissions } from './dto/asign-user-permission.dto';
+import { AsignUserMenus } from './dto/asign-user-menus.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -26,6 +28,37 @@ export class UsersController {
 			statusCode: HttpStatus.OK,
 			message: 'User profile successfuly',
 			data: user
+		})
+	}
+
+	@Post('/asign-permission')
+	async userPermission(
+		@Body() asignPermision: AsignUserPermissions,
+		@Req() request: Request,
+		@Res() response: Response
+	){
+		const userPermission = await this.userService.asignUserPermissions(asignPermision)
+		this.logger.debug('user permission', userPermission)
+
+		response.json({
+			statusCode: HttpStatus.CREATED,
+			message: 'Asign user permission successfuly',
+			data: userPermission
+		})
+	}
+
+	@Post('/asign-menus')
+	async userMenus(
+		@Body() asignMenu: AsignUserMenus,
+		@Req() request: Request,
+		@Res() response: Response
+	){
+		const userMenu = await this.userService.asignUserMenus(asignMenu)
+
+		response.json({
+			statusCode: HttpStatus.CREATED,
+			message: 'Asign user menu successfuly',
+			data: userMenu
 		})
 	}
 }

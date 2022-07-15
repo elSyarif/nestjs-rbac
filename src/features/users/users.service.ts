@@ -3,6 +3,10 @@ import { Users } from './user.entity';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import { AsignUserPermissions } from './dto/asign-user-permission.dto';
+import { UserPermissions } from './user-permission.entity';
+import { UserMenus } from './user-menus.entity';
+import { AsignUserMenus } from './dto/asign-user-menus.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,6 +15,10 @@ export class UsersService {
 	constructor(
 		@InjectRepository(Users)
 		private userRepository: Repository<Users>,
+		@InjectRepository(UserPermissions)
+		private userPermissionRepository: Repository<UserPermissions>,
+		@InjectRepository(UserMenus)
+		private userMenuRepository: Repository<UserMenus>,
 		private dataSource: DataSource
 	){}
 
@@ -62,7 +70,7 @@ export class UsersService {
 			user.password = registerUserDto.password
 			user.hashPassword()
 			user.is_active = true
-			user.role_id = 1
+			user.role = 1
 
 			await ds.manager.save(user)
 
@@ -98,5 +106,48 @@ export class UsersService {
 	// TODO: update user
 	async updateUser(){}
 
+	// TODO: asign access user permission
+	async asignUserPermissions(asign: AsignUserPermissions){
+		try {
+			const userPermission = new UserPermissions()
+
+			userPermission.user_id = asign.user_id
+			userPermission.permission_id = asign.permission_id
+
+			const result = await this.userPermissionRepository.save(userPermission)
+			this.logger.verbose(result)
+
+			return result
+		} catch (error) {
+			if(error.code === 'ER_DUP_ENTRY'){
+				throw new ConflictException('user permission already asign')
+			}
+			throw new BadRequestException()
+		}
+	}
+
+	// TODO: asign user menus
+	async asignUserMenus(asign: AsignUserMenus){
+		try {
+			const userMenu = new UserMenus()
+
+			userMenu.user_id = asign.user_id
+			userMenu.menu_id = asign.menu_id
+			userMenu.is_read = asign.is_read  || true
+			userMenu.is_create = asign.is_create  || false
+			userMenu.is_update = asign.is_update  || false
+			userMenu.is_delete = asign.is_delete  || false
+
+			const result = await this.userMenuRepository.save(userMenu)
+			this.logger.verbose(result)
+
+			return result
+		} catch (error) {
+			if(error.code === 'ER_DUP_ENTRY'){
+				throw new ConflictException('user menu already asign')
+			}
+			throw new BadRequestException()
+		}
+	}
 
 }

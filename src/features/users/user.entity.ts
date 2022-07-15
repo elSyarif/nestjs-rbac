@@ -1,5 +1,6 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm"
+import {  Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 import * as bcrypt from 'bcrypt';
+import { Roles } from '../roles/roles.entity';
 
 @Entity()
 export class Users{
@@ -20,8 +21,11 @@ export class Users{
 	@Column()
 	is_active: boolean
 
-	@Column()
-	role_id: number
+	@ManyToOne(() => Roles)
+	@JoinColumn({
+		name: 'role_id'
+	})
+	role: number
 
 	hashPassword(){
 		this.password = bcrypt.hashSync(this.password, 10)

@@ -10,7 +10,7 @@ export class Menus{
 
     @Column()
     title: string
-    
+
     @Column()
     icon: string
 
@@ -18,12 +18,12 @@ export class Menus{
     link: string
 
     @Column({
-        type: "bool"
-    })
-    is_active: boolean
+	    type: "int",
+	})
+	sort: number
 
-    @Column({
-        type: "int",
-    })
-    sort: number
+	@Column({
+	    type: "bool"
+	})
+	is_active: boolean
 }
