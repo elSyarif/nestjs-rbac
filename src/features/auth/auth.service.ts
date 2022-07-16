@@ -25,7 +25,6 @@ export class AuthService {
 
 		if(user && await user.checkPassword(password)){
 			const { password, ...result } = user
-
 			return result
 		}
 
@@ -39,9 +38,18 @@ export class AuthService {
 	}
 
 	async login(user: UserInterface){
+		let arr = []
+
+		const permission = await this.usersService.userPermission(user.id)
+		for (let i = 0; i < permission.length; i++) {
+			arr.push(permission[i].name)
+		}
+
 		const payload = {
 			username: user.username,
-			_id: user.id
+			_id: user.id,
+			role: user.role.name,
+			permission: arr
 		}
 
 		return {
@@ -86,7 +94,7 @@ export class AuthService {
 		const decode = this.jwtService.verify(Decrypt(token.refresh_token), {
 			secret: process.env.JWT_SECRET_REFRESH_TOKEN,
 		})
-		
+
 		const isExp = decode.exp * 1000 <= Date.parse(Date())
 		if(isExp){
 			throw new BadRequestException('Refresh Token expire')
@@ -97,7 +105,7 @@ export class AuthService {
 			username: userToken.username
 		})
 
-		// return access_token 
+		// return access_token
 		return newAccessToken
 	}
 

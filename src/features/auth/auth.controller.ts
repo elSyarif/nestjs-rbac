@@ -26,8 +26,6 @@ export class AuthController {
 	async login(@Body() loginDto: LoginDto, @Req() request: Request, @Res() response: Response){
 		const {username, password} = loginDto
 
-		const ip = request.ip
-
 		const user: LoginUserInterface = await this.authService.validateUser(username, password)
 
 		const jwt = await this.authService.login(user)
@@ -53,6 +51,7 @@ export class AuthController {
 			await this.authService.saveToken(payload)
 		}
 
+		const {role, ...result} = user
 		// setup cookies token
 		response.cookie('x-refresh-token', Encrypt(jwt.refresh_token), {
 			httpOnly: true,
@@ -60,10 +59,10 @@ export class AuthController {
 			secure: false
 		})
 
-		return response.json({
+		response.json({
 			statusCode: HttpStatus.OK,
 			message: 'success',
-			data: user
+			data: result
 		})
 	}
 
@@ -75,7 +74,7 @@ export class AuthController {
 	async register(@Body() registerUserDto:RegisterUserDto, @Req() request: Request, @Res() response: Response){
 		const user = 	await this.authService.register(registerUserDto)
 
-		return response.json({
+		response.json({
 			statusCode: HttpStatus.CREATED,
 			message: 'User create successfuly',
 			data: user

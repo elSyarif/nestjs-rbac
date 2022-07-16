@@ -27,7 +27,7 @@ export class UsersController {
 		response.json({
 			statusCode: HttpStatus.OK,
 			message: 'User profile successfuly',
-			data: user
+			data: request.user
 		})
 	}
 

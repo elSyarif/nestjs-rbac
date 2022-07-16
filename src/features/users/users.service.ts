@@ -33,6 +33,9 @@ export class UsersService {
 	 */
 	async findOne(username: string): Promise<any>{
 	 const user = await this.userRepository.findOne({
+		relations: {
+			role: true
+		},
 		where: {
 			username: username
 		}
@@ -182,7 +185,6 @@ export class UsersService {
 			return this.menuNode(mainMenu, 0)
 
 		} catch (error) {
-			console.log(error)
 			this.logger.verbose('userMenu Error')
 		}
 	}
@@ -210,4 +212,14 @@ export class UsersService {
 
 		return mainMenu
 	}
+
+	async userPermission(userId: string){
+		const permission = await this.userPermissionRepository
+			.query(`SELECT p.id, p.name
+					FROM user_permissions up
+				LEFT JOIN permissions p ON up.permission_id = p.id
+				WHERE up.user_id = ?`, [userId])
+
+		return permission
+}
 }
