@@ -61,4 +61,23 @@ export class UsersController {
 			data: userMenu
 		})
 	}
+
+	@Get('/menus')
+	async userByMenus(
+		@Req() request: Request,
+		@Res() response: Response
+	){
+		this.logger.verbose('userByMenus')
+
+		const user: any = request.user
+
+		const userMenus = await this.userService.userMenus(user._id)
+		this.logger.verbose(userMenus)
+
+		response.json({
+			statusCode: HttpStatus.CREATED,
+			message: 'user Menus successfuly',
+			data: userMenus
+		})
+	}
 }

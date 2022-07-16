@@ -7,6 +7,7 @@ import { AsignUserPermissions } from './dto/asign-user-permission.dto';
 import { UserPermissions } from './user-permission.entity';
 import { UserMenus } from './user-menus.entity';
 import { AsignUserMenus } from './dto/asign-user-menus.dto';
+import { Menus } from '../menus/menus.entity';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +20,9 @@ export class UsersService {
 		private userPermissionRepository: Repository<UserPermissions>,
 		@InjectRepository(UserMenus)
 		private userMenuRepository: Repository<UserMenus>,
+		@InjectRepository(Menus)
+		private menuRepository: Repository<Menus>,
+
 		private dataSource: DataSource
 	){}
 
@@ -150,4 +154,60 @@ export class UsersService {
 		}
 	}
 
+	//TODO: get all user access menu
+	async userMenus(userId: string){
+		try {
+			// ambil dari table user menu
+			const userMenu = await this.userMenuRepository
+				.query(`SELECT m.id, m.parent_id , m.title, m.icon, m.link, m.sort
+							FROM user_menus um
+						left Join menus m ON um.menu_id = m.id
+						WHERE m.is_active = TRUE
+						  AND um.user_id = ?
+						ORDER BY m.sort `, [userId])
+
+			// Mengurutkan array berdasarkan id
+			const mainMenu = [];
+			for (let i = 0; i < userMenu.length; i++) {
+				mainMenu[userMenu[i].id] = {
+					id: userMenu[i].id,
+					parent_id: userMenu[i].parent_id,
+					title: userMenu[i].title,
+					icon: userMenu[i].icon,
+					link: userMenu[i].link,
+					sort: userMenu[i].sort,
+				}
+			}
+
+			return this.menuNode(mainMenu, 0)
+
+		} catch (error) {
+			console.log(error)
+			this.logger.verbose('userMenu Error')
+		}
+	}
+
+	//TODO: Maping menu berdasarkan parent id dan menjadikan object
+	menuNode(menu: any[], parent: number){
+		const mainMenu = []
+
+		for (let i = 1; i < menu.length; i++) {
+			// console.log(`id : ${i} : ${menu[i] != undefined ? menu[i].parent_id : null} == ${parent}`)
+			if(menu[i] == undefined) {i++}
+
+			if(menu[i] != undefined && menu[i].parent_id === parent){
+				mainMenu.push({
+					id: menu[i].id,
+					parent_id: menu[i].parent_id,
+					title: menu[i].title,
+					icon: menu[i].icon,
+					link: menu[i].link,
+					sort: menu[i].sort,
+					sub_menu: this.menuNode(menu, i)
+				})
+			}
+		}
+
+		return mainMenu
+	}
 }

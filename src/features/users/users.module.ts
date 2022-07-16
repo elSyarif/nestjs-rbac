@@ -7,9 +7,10 @@ import { UserToken } from './token.entity';
 import { UserTokenService } from './user-token.service';
 import { UserPermissions } from './user-permission.entity';
 import { UserMenus } from './user-menus.entity';
+import { Menus } from '../menus/menus.entity';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Users, UserToken, UserPermissions, UserMenus])],
+	imports: [TypeOrmModule.forFeature([Users, UserToken, UserPermissions, UserMenus, Menus])],
 	providers: [UsersService, UserTokenService],
 	exports: [TypeOrmModule],
 	controllers: [UsersController],
