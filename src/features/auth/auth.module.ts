@@ -8,8 +8,6 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import configuration from '@config/configuration';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { APP_GUARD } from '@nestjs/core';
 import { UserTokenService } from '../users/user-token.service';
 
 @Module({
@@ -31,10 +29,6 @@ import { UserTokenService } from '../users/user-token.service';
 		AuthService,
 		UserTokenService,
 		LocalStrategy,
-		{
-			provide: APP_GUARD,
-			useClass: JwtStrategy
-		}
 	],
 	controllers: [AuthController],
 })

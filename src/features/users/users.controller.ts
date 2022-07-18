@@ -6,6 +6,11 @@ import { Users } from './user.entity';
 import { UsersService } from './users.service';
 import { AsignUserPermissions } from './dto/asign-user-permission.dto';
 import { AsignUserMenus } from './dto/asign-user-menus.dto';
+import { RolesGuard } from '@common/guard/role.guard';
+import { Check_Ability, Roles } from '@common/decorators';
+import { Action, CaslAbilityFactory } from '../../casl/casl-ability.factory';
+import { PermissionsGuard } from '../../common/guard/permissons.guard';
+import { AbilitiesGuard } from '../../common/guard/abilities.guard';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -15,19 +20,21 @@ export class UsersController {
 	private readonly logger = new Logger(UsersController.name)
 
 	constructor(
-		private userService: UsersService
-	){}
+		private userService: UsersService,
+		private caslAbilityFactory: CaslAbilityFactory
+		){}
 
 	@Get('/profile')
+	@UseGuards(AbilitiesGuard)
+	@Check_Ability({action: Action.Read, subject: Users})
 	async profile(@Req() request: Request, @Res() response: Response){
-		const userId: any = request.user
-
-		const user = await this.userService.findById(userId._id)
+		const user: any = request.user
+		const result = await this.userService.findById(user._id)
 
 		response.json({
 			statusCode: HttpStatus.OK,
 			message: 'User profile successfuly',
-			data: request.user
+			data: result
 		})
 	}
 

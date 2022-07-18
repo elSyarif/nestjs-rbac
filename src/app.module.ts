@@ -8,6 +8,10 @@ import { PermissionsModule } from './features/permissions/permissions.module';
 import { RolesModule } from './features/roles/roles.module';
 import { UsersModule } from './features/users/users.module';
 import { MenusModule } from './features/menus/menus.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtStrategy } from './features/auth/strategies/jwt.strategy';
+import { RolesGuard } from './common/guard/role.guard';
+import { CaslModule } from './casl/casl.module';
 
 @Module({
   imports: [
@@ -21,9 +25,15 @@ import { MenusModule } from './features/menus/menus.module';
 	UsersModule,
 	RolesModule,
 	PermissionsModule,
-	MenusModule
+	MenusModule,
+	CaslModule
   ],
-  providers: [],
+  providers: [
+	{
+		provide: APP_GUARD,
+		useClass: JwtStrategy,
+	}
+  ],
   controllers: [],
 })
 export class AppModule {}

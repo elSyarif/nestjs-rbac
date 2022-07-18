@@ -16,7 +16,7 @@ export class Users{
 	username: string
 
 	@Column()
-	password: string
+	password?: string
 
 	@Column()
 	is_active: boolean
@@ -27,11 +27,11 @@ export class Users{
 	})
 	role: number
 
-	hashPassword(){
+	hashPassword?(){
 		this.password = bcrypt.hashSync(this.password, 10)
 	}
 
-	async checkPassword(password: string){
+	async checkPassword?(password: string){
 		return bcrypt.compareSync(password, this.password)
 	}
 }

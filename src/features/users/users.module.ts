@@ -8,11 +8,21 @@ import { UserTokenService } from './user-token.service';
 import { UserPermissions } from './user-permission.entity';
 import { UserMenus } from './user-menus.entity';
 import { Menus } from '../menus/menus.entity';
+import { CaslModule } from '../../casl/casl.module';
+import { CaslAbilityFactory } from 'src/casl/casl-ability.factory';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Users, UserToken, UserPermissions, UserMenus, Menus])],
-	providers: [UsersService, UserTokenService],
-	exports: [TypeOrmModule],
+	imports: [
+		TypeOrmModule.forFeature(
+			[Users, UserToken, UserPermissions, UserMenus, Menus]),
+		CaslModule
+		],
+	providers: [
+		UsersService,
+		UserTokenService,
+		CaslAbilityFactory
+	],
+	exports: [TypeOrmModule, CaslModule],
 	controllers: [UsersController],
 })
 export class UsersModule {}
