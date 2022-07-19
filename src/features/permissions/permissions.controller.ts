@@ -1,5 +1,5 @@
 import { JwtAuthGuard } from "@common/guard/jwt-auth.guard";
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Put, Req, Res, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Put, Req, Res, UseGuards, UsePipes, ValidationPipe, Version } from "@nestjs/common";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Request, Response } from "express";
 import { CreatePermissionDto } from "./dto/create-permission.dto";
@@ -11,11 +11,12 @@ import { PermissionsService } from "./permissions.service";
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class PermissionsController{
-    
+
     constructor(
         private permissionsService: PermissionsService
     ){}
-    
+
+	@Version('1')
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @UsePipes(new ValidationPipe({ transform: true }))
@@ -38,7 +39,8 @@ export class PermissionsController{
             date: permission
         })
     }
-    
+
+	@Version('1')
     @Get()
     @HttpCode(HttpStatus.OK)
     @ApiResponse({ status: HttpStatus.OK, description: 'Permissions List'})
@@ -54,7 +56,8 @@ export class PermissionsController{
             date: permission
         })
     }
-    
+
+	@Version('1')
     @Get(':id')
     @HttpCode(HttpStatus.OK)
     async findOne(
@@ -70,7 +73,8 @@ export class PermissionsController{
             date: permission
         })
     }
-    
+
+	@Version('1')
     @Patch(':id')
     @HttpCode(HttpStatus.OK)
     @UsePipes(new ValidationPipe({ transform: true }))
@@ -90,7 +94,8 @@ export class PermissionsController{
             date: permission
         })
     }
-    
+
+	@Version('1')
     @Delete(':id')
     @HttpCode(HttpStatus.OK)
     async remove(

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, Res, UseGuards, BadRequestException, HttpStatus, HttpCode, UsePipes, ValidationPipe, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, Res, UseGuards, BadRequestException, HttpStatus, HttpCode, UsePipes, ValidationPipe, Patch, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guard/jwt-auth.guard';
 import { RolesService } from './roles.service';
@@ -16,18 +16,20 @@ export class RolesController {
 		private roleService: RolesService
 	){}
 
+	@Version('1')
 	@Get()
 	@HttpCode(HttpStatus.OK)
 	async getRoles(@Req() request: Request, @Res() response: Response){
 		const roles = await this.roleService.findAll()
-		
+
 		response.json({
 			statusCode: HttpStatus.OK,
 			message: 'Role list',
 			data: roles
 		})
 	}
-	
+
+	@Version('1')
 	@Get(':id')
 	@HttpCode(HttpStatus.OK)
 	async getRoleById(@Param('id', ParseIntPipe) id: number, @Req() request: Request, @Res() response: Response){
@@ -40,6 +42,7 @@ export class RolesController {
 		})
 	}
 
+	@Version('1')
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@UsePipes(new ValidationPipe({ transform: true}))
@@ -57,6 +60,7 @@ export class RolesController {
 		})
 	}
 
+	@Version('1')
 	@Patch(':id')
 	@HttpCode(HttpStatus.OK)
 	async update(
@@ -76,6 +80,7 @@ export class RolesController {
 		})
 	}
 
+	@Version('1')
 	@Delete(':id')
 	@HttpCode(HttpStatus.OK)
 	async delete(@Param('id', ParseIntPipe) id: number, @Req() request: Request, @Res() response: Response){

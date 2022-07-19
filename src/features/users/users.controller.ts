@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, UseGuards, HttpStatus, Logger, Post, Body } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards, HttpStatus, Logger, Post, Body, Version } from '@nestjs/common';
 import { JwtAuthGuard } from '@common/guard/jwt-auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -24,6 +24,7 @@ export class UsersController {
 		private caslAbilityFactory: CaslAbilityFactory
 		){}
 
+	@Version('1')
 	@Get('/profile')
 	@UseGuards(AbilitiesGuard)
 	@Check_Ability({action: Action.Read, subject: Users})
@@ -38,6 +39,7 @@ export class UsersController {
 		})
 	}
 
+	@Version('1')
 	@Post('/asign-permission')
 	async userPermission(
 		@Body() asignPermision: AsignUserPermissions,
@@ -54,6 +56,7 @@ export class UsersController {
 		})
 	}
 
+	@Version('1')
 	@Post('/asign-menus')
 	async userMenus(
 		@Body() asignMenu: AsignUserMenus,
@@ -69,6 +72,7 @@ export class UsersController {
 		})
 	}
 
+	@Version('1')
 	@Get('/menus')
 	async userByMenus(
 		@Req() request: Request,

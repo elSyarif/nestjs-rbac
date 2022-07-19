@@ -1,5 +1,5 @@
 import { Public } from '@common/decorators';
-import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UseGuards, UsePipes, ValidationPipe, Version } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { AuthService } from './auth.service';
@@ -17,6 +17,7 @@ export class AuthController {
 
 	constructor(private authService: AuthService){}
 
+	@Version('1')
 	@Public()
 	@Post('/login')
 	@HttpCode(HttpStatus.OK)
@@ -66,6 +67,7 @@ export class AuthController {
 		})
 	}
 
+	@Version('1')
 	@Post('/register')
 	@HttpCode(HttpStatus.CREATED)
 	@UsePipes(new ValidationPipe({ transform: true}))
@@ -82,6 +84,7 @@ export class AuthController {
 	}
 
 
+	@Version('1')
 	@Post('logout')
 	@UseGuards(JwtAuthGuard)
 	@HttpCode(HttpStatus.OK)
@@ -104,6 +107,7 @@ export class AuthController {
 		})
 	}
 
+	@Version('1')
 	@Post('refresh')
 	@UseGuards(JwtAuthGuard)
 	@HttpCode(HttpStatus.OK)

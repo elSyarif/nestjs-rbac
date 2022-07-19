@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, Post, UseGuards, HttpStatus, Patch, Delete, Body, Req, Res, UsePipes, ValidationPipe, BadRequestException, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, HttpCode, Post, UseGuards, HttpStatus, Patch, Delete, Body, Req, Res, UsePipes, ValidationPipe, BadRequestException, Param, ParseIntPipe, Version } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from '../../common/guard/jwt-auth.guard';
@@ -15,6 +15,7 @@ export class MenusController {
 		private menuService: MenusService
 	){}
 
+	@Version('1')
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	@UsePipes(new ValidationPipe({ transform: true }))
@@ -36,6 +37,7 @@ export class MenusController {
 		});
 	}
 
+	@Version('1')
 	@Get()
 	@HttpCode(HttpStatus.OK)
 	async findAll(
@@ -51,6 +53,7 @@ export class MenusController {
 		});
 	}
 
+	@Version('1')
 	@Get(':id')
 	@HttpCode(HttpStatus.OK)
 	async findOne(
@@ -67,6 +70,7 @@ export class MenusController {
 		});
 	}
 
+	@Version('1')
 	@Patch(':id')
 	@UsePipes(new ValidationPipe({ transform: true }))
 	@HttpCode(HttpStatus.OK)
@@ -88,6 +92,7 @@ export class MenusController {
 		});
 	}
 
+	@Version('1')
 	@Delete(':id')
 	@HttpCode(HttpStatus.OK)
 	async remove(
